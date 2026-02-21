@@ -73,9 +73,7 @@ export default function Dashboard({ user, onSelectList }) {
 
   return (
     <div className="dashboard">
-      <ActivityFeed lists={lists} onSelectList={handleSelectList} />
-
-      <DailyTasks user={user} lists={lists} />
+      <ActivityFeed lists={lists} onSelectList={handleSelectList} user={user} />
 
       <button className="quick-add-btn" onClick={() => setShowQuickAdd(true)}>
         + {t.addTask}
@@ -84,6 +82,8 @@ export default function Dashboard({ user, onSelectList }) {
       {showQuickAdd && (
         <QuickAdd user={user} lists={lists} onClose={() => setShowQuickAdd(false)} />
       )}
+
+      <DailyTasks user={user} lists={lists} />
 
       <ListSelector lists={lists} onSelectList={handleSelectList} unreadCounts={unreadCounts} />
     </div>

@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useLanguage } from '../i18n';
 
-export default function ActivityFeed({ lists, onSelectList }) {
+export default function ActivityFeed({ lists, onSelectList, user }) {
   const { t } = useLanguage();
   const [activities, setActivities] = useState([]);
+
+  const getDismissedAt = () =>
+    localStorage.getItem(`casasync-activity-dismissed-${user}`) || null;
 
   const fetchActivity = async () => {
     const { data } = await supabase
@@ -21,11 +24,18 @@ export default function ActivityFeed({ lists, onSelectList }) {
     const listMap = {};
     lists.forEach((l) => { listMap[l.id] = l; });
 
+    const dismissedAt = getDismissedAt();
+
+    // Filter out dismissed activities
+    const filtered = dismissedAt
+      ? data.filter((item) => new Date(item.created_at) > new Date(dismissedAt))
+      : data;
+
     // Group consecutive items by same added_by + same list_id
     const grouped = [];
     let current = null;
 
-    for (const item of data) {
+    for (const item of filtered) {
       const list = listMap[item.list_id];
       const listName = list ? `${list.emoji} ${list.name}` : '📌';
 
@@ -47,7 +57,7 @@ export default function ActivityFeed({ lists, onSelectList }) {
     }
     if (current) grouped.push(current);
 
-    setActivities(grouped.slice(0, 8));
+    setActivities(grouped.slice(0, 4));
   };
 
   useEffect(() => {
@@ -63,6 +73,11 @@ export default function ActivityFeed({ lists, onSelectList }) {
     return () => { supabase.removeChannel(channel); };
   }, [lists]);
 
+  const handleClearAll = () => {
+    localStorage.setItem(`casasync-activity-dismissed-${user}`, new Date().toISOString());
+    setActivities([]);
+  };
+
   if (activities.length === 0) return null;
 
   const formatTime = (dateStr) => {
@@ -74,7 +89,12 @@ export default function ActivityFeed({ lists, onSelectList }) {
 
   return (
     <div className="dashboard-section">
-      <h2 className="section-title">{t.recentActivity}</h2>
+      <div className="section-header">
+        <h2 className="section-title">{t.recentActivity}</h2>
+        <button className="clear-activity-btn" onClick={handleClearAll}>
+          {t.clearAll}
+        </button>
+      </div>
       <div className="activity-list">
         {activities.map((a, i) => (
           <div

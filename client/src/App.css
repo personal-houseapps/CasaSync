@@ -247,6 +247,33 @@ body {
 }
 
 /* ===== ACTIVITY FEED ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-header .section-title {
+  margin-bottom: 0;
+}
+
+.clear-activity-btn {
+  background: none;
+  border: 1px solid var(--border);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+}
+
+.clear-activity-btn:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
 .activity-list {
   display: flex;
   flex-direction: column;
@@ -866,20 +893,30 @@ body {
 }
 
 .task-delete {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  color: #d1d5db;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  font-size: 1rem;
+  color: var(--danger);
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
   line-height: 1;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .task-delete:hover {
-  color: var(--danger);
-  background: #fef2f2;
+  background: #fee2e2;
+  border-color: var(--danger);
+}
+
+.task-delete:active {
+  transform: scale(0.92);
 }
 
 .clear-completed-btn {

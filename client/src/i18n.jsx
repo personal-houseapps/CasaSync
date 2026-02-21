@@ -53,6 +53,7 @@ const en = {
 
   // Common
   delete: 'Delete',
+  clearAll: 'Clear all',
 };
 
 const pt = {
@@ -108,6 +109,7 @@ const pt = {
 
   // Common
   delete: 'Apagar',
+  clearAll: 'Limpar tudo',
 };
 
 const languages = { en, pt };
