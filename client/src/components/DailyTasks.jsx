@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useLanguage } from '../i18n';
+import { getLightColor } from '../utils/colors';
 
-export default function DailyTasks({ user, lists }) {
+export default function DailyTasks({ member, members, lists }) {
   const { t } = useLanguage();
   const [dailyItems, setDailyItems] = useState([]);
 
@@ -33,18 +34,29 @@ export default function DailyTasks({ user, lists }) {
     return new Date(item.completed_at).toDateString() === new Date().toDateString();
   };
 
+  const getAuthorColor = (item) => {
+    if (item.added_by_member_id) {
+      const m = members.find((mem) => mem.id === item.added_by_member_id);
+      return m?.color || '#6b7280';
+    }
+    const m = members.find((mem) => mem.display_name === item.added_by);
+    return m?.color || '#6b7280';
+  };
+
   const handleToggle = async (item) => {
     const doneToday = isDoneToday(item);
     if (doneToday) {
       await supabase.from('items').update({
         completed: false,
         completed_by: null,
+        completed_by_member_id: null,
         completed_at: null,
       }).eq('id', item.id);
     } else {
       await supabase.from('items').update({
         completed: true,
-        completed_by: user,
+        completed_by: member.display_name,
+        completed_by_member_id: member.id,
         completed_at: new Date().toISOString(),
       }).eq('id', item.id);
     }
@@ -66,7 +78,7 @@ export default function DailyTasks({ user, lists }) {
         {dailyItems.map((item) => {
           const doneToday = isDoneToday(item);
           const list = listMap[item.list_id];
-          const isFilipa = item.added_by === 'Filipa';
+          const authorColor = getAuthorColor(item);
 
           return (
             <div key={item.id} className={`daily-item ${doneToday ? 'daily-item-done' : ''}`}>
@@ -85,7 +97,10 @@ export default function DailyTasks({ user, lists }) {
                   {list && (
                     <span className="daily-list-badge">{list.emoji} {list.name}</span>
                   )}
-                  <span className={`task-author ${isFilipa ? 'user-filipa' : 'user-rafael'}`}>
+                  <span
+                    className="task-author"
+                    style={{ background: getLightColor(authorColor), color: authorColor }}
+                  >
                     {item.added_by}
                   </span>
                   <span className={doneToday ? 'done-today-badge' : 'not-done-badge'}>

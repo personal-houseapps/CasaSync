@@ -5,7 +5,7 @@ import EditListModal from './EditListModal';
 
 const EMOJI_OPTIONS = ['📋', '🛒', '🏠', '🐢', '🍳', '🧹', '💊', '📦', '🎁', '✈️'];
 
-export default function ListSelector({ lists, onSelectList, unreadCounts = {} }) {
+export default function ListSelector({ lists, onSelectList, unreadCounts = {}, member }) {
   const { t } = useLanguage();
   const [showNewForm, setShowNewForm] = useState(false);
   const [newName, setNewName] = useState('');
@@ -15,7 +15,11 @@ export default function ListSelector({ lists, onSelectList, unreadCounts = {} })
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!newName.trim()) return;
-    await supabase.from('lists').insert({ name: newName.trim(), emoji: newEmoji });
+    await supabase.from('lists').insert({
+      name: newName.trim(),
+      emoji: newEmoji,
+      household_id: member.household_id,
+    });
     setNewName('');
     setNewEmoji('📋');
     setShowNewForm(false);

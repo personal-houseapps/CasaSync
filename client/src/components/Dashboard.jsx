@@ -6,7 +6,7 @@ import DailyTasks from './DailyTasks';
 import QuickAdd from './QuickAdd';
 import ListSelector from './ListSelector';
 
-export default function Dashboard({ user, onSelectList }) {
+export default function Dashboard({ member, members, onSelectList }) {
   const { t } = useLanguage();
   const [lists, setLists] = useState([]);
   const [recentItems, setRecentItems] = useState([]);
@@ -16,6 +16,7 @@ export default function Dashboard({ user, onSelectList }) {
     const { data } = await supabase
       .from('lists')
       .select('*')
+      .eq('household_id', member.household_id)
       .order('created_at', { ascending: true });
     if (data) setLists(data);
   };
@@ -47,13 +48,12 @@ export default function Dashboard({ user, onSelectList }) {
       supabase.removeChannel(listsChannel);
       supabase.removeChannel(itemsChannel);
     };
-  }, []);
+  }, [member.household_id]);
 
-  // Compute how many new items each list has since the user last opened it
   const unreadCounts = useMemo(() => {
     const counts = {};
     for (const list of lists) {
-      const seenAt = localStorage.getItem(`casasync-seen-${user}-${list.id}`);
+      const seenAt = localStorage.getItem(`casasync-seen-${member.id}-${list.id}`);
       if (!seenAt) {
         counts[list.id] = recentItems.filter((i) => i.list_id === list.id).length;
       } else {
@@ -63,29 +63,28 @@ export default function Dashboard({ user, onSelectList }) {
       }
     }
     return counts;
-  }, [lists, recentItems, user]);
+  }, [lists, recentItems, member.id]);
 
-  // Mark list as seen when opening it
   const handleSelectList = (list) => {
-    localStorage.setItem(`casasync-seen-${user}-${list.id}`, new Date().toISOString());
+    localStorage.setItem(`casasync-seen-${member.id}-${list.id}`, new Date().toISOString());
     onSelectList(list);
   };
 
   return (
     <div className="dashboard">
-      <ActivityFeed lists={lists} onSelectList={handleSelectList} user={user} />
+      <ActivityFeed lists={lists} onSelectList={handleSelectList} member={member} members={members} />
 
       <button className="quick-add-btn" onClick={() => setShowQuickAdd(true)}>
         + {t.addTask}
       </button>
 
       {showQuickAdd && (
-        <QuickAdd user={user} lists={lists} onClose={() => setShowQuickAdd(false)} />
+        <QuickAdd member={member} members={members} lists={lists} onClose={() => setShowQuickAdd(false)} />
       )}
 
-      <DailyTasks user={user} lists={lists} />
+      <DailyTasks member={member} members={members} lists={lists} />
 
-      <ListSelector lists={lists} onSelectList={handleSelectList} unreadCounts={unreadCounts} />
+      <ListSelector lists={lists} onSelectList={handleSelectList} unreadCounts={unreadCounts} member={member} />
     </div>
   );
 }

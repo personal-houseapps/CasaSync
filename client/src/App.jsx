@@ -1,35 +1,43 @@
 import { useState } from 'react';
 import { useLanguage } from './i18n';
-import NameSelect from './components/NameSelect';
+import { useAuth } from './contexts/AuthContext';
+import { getLightColor } from './utils/colors';
+import AuthScreen from './components/AuthScreen';
+import HouseholdSetup from './components/HouseholdSetup';
+import MemberPicker from './components/MemberPicker';
 import Dashboard from './components/Dashboard';
 import TaskList from './components/TaskList';
+import Settings from './components/Settings';
 
 export default function App() {
-  const [user, setUser] = useState(() => localStorage.getItem('casasync-user'));
+  const { session, member, household, members, loading } = useAuth();
   const [selectedList, setSelectedList] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
   const { t, lang, toggleLanguage } = useLanguage();
 
-  const handleSelectUser = (name) => {
-    localStorage.setItem('casasync-user', name);
-    setUser(name);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('casasync-user');
-    setUser(null);
-    setSelectedList(null);
-  };
-
-  if (!user) {
-    return <NameSelect onSelect={handleSelectUser} />;
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <h1 className="name-select-title">CasaSync</h1>
+      </div>
+    );
   }
+
+  // Not logged in
+  if (!session) return <AuthScreen />;
+
+  // Logged in but no household
+  if (!household) return <HouseholdSetup />;
+
+  // Logged in + household but no active member selected (Disney+ style picker)
+  if (!member) return <MemberPicker />;
 
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-left">
-          {selectedList && (
-            <button className="back-btn" onClick={() => setSelectedList(null)}>
+          {(selectedList || showSettings) && (
+            <button className="back-btn" onClick={() => { setSelectedList(null); setShowSettings(false); }}>
               {t.back}
             </button>
           )}
@@ -39,18 +47,25 @@ export default function App() {
           <button className="lang-btn" onClick={toggleLanguage} title="Switch language">
             {lang === 'en' ? 'PT' : 'EN'}
           </button>
-          <span className={`user-badge ${user === 'Filipa' ? 'user-filipa' : 'user-rafael'}`}>
-            {user}
+          <span
+            className="user-badge"
+            style={{ background: getLightColor(member.color), color: member.color }}
+          >
+            {member.display_name}
           </span>
-          <button className="logout-btn" onClick={handleLogout}>{t.switchUser}</button>
+          <button className="settings-btn" onClick={() => { setShowSettings(true); setSelectedList(null); }}>
+            ⚙️
+          </button>
         </div>
       </header>
 
       <main className="app-main">
-        {selectedList ? (
-          <TaskList list={selectedList} user={user} onBack={() => setSelectedList(null)} />
+        {showSettings ? (
+          <Settings onClose={() => setShowSettings(false)} />
+        ) : selectedList ? (
+          <TaskList list={selectedList} member={member} members={members} onBack={() => setSelectedList(null)} />
         ) : (
-          <Dashboard user={user} onSelectList={setSelectedList} />
+          <Dashboard member={member} members={members} onSelectList={setSelectedList} />
         )}
       </main>
     </div>
