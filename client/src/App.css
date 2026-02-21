@@ -520,8 +520,40 @@ body {
   transform: scale(0.97);
 }
 
+.list-card-emoji-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .list-card-emoji {
   font-size: 2rem;
+}
+
+.list-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: var(--pink);
+  color: white;
+  border-radius: 50px;
+  min-width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid var(--card);
+  animation: badge-pop 0.2s ease;
+}
+
+@keyframes badge-pop {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 .list-card-name {

@@ -5,7 +5,7 @@ import EditListModal from './EditListModal';
 
 const EMOJI_OPTIONS = ['📋', '🛒', '🏠', '🐢', '🍳', '🧹', '💊', '📦', '🎁', '✈️'];
 
-export default function ListSelector({ lists, onSelectList }) {
+export default function ListSelector({ lists, onSelectList, unreadCounts = {} }) {
   const { t } = useLanguage();
   const [showNewForm, setShowNewForm] = useState(false);
   const [newName, setNewName] = useState('');
@@ -66,8 +66,15 @@ export default function ListSelector({ lists, onSelectList }) {
                 </button>
               </div>
             )}
-            <span className="list-card-emoji">{list.emoji}</span>
-            <span className="list-card-name">{list.name}</span>
+            <div className="list-card-emoji-wrap">
+              <span className="list-card-emoji">{list.emoji}</span>
+              {unreadCounts[list.id] > 0 && (
+                <span className="list-badge">{unreadCounts[list.id]}</span>
+              )}
+            </div>
+            <span className="list-card-name">
+              {isGeneralList(list) ? t.general : list.name}
+            </span>
           </div>
         ))}
 
