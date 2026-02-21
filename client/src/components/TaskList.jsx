@@ -28,9 +28,14 @@ export default function TaskList({ list, user }) {
         event: '*',
         schema: 'public',
         table: 'items',
-        filter: `list_id=eq.${list.id}`,
-      }, () => {
-        fetchItems();
+      }, (payload) => {
+        if (
+          payload.eventType === 'DELETE' ||
+          payload.new?.list_id === list.id ||
+          payload.old?.list_id === list.id
+        ) {
+          fetchItems();
+        }
       })
       .subscribe();
 
@@ -71,10 +76,12 @@ export default function TaskList({ list, user }) {
   };
 
   const handleDelete = async (itemId) => {
+    setItems((prev) => prev.filter((i) => i.id !== itemId));
     await supabase.from('items').delete().eq('id', itemId);
   };
 
   const handleClearCompleted = async () => {
+    setItems((prev) => prev.filter((i) => !i.completed));
     await supabase.from('items').delete().eq('list_id', list.id).eq('completed', true);
   };
 
