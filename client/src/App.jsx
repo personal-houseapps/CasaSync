@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { useLanguage } from './i18n';
 import NameSelect from './components/NameSelect';
-import ListSelector from './components/ListSelector';
+import Dashboard from './components/Dashboard';
 import TaskList from './components/TaskList';
 
 export default function App() {
   const [user, setUser] = useState(() => localStorage.getItem('casasync-user'));
   const [selectedList, setSelectedList] = useState(null);
+  const { t, lang, toggleLanguage } = useLanguage();
 
   const handleSelectUser = (name) => {
     localStorage.setItem('casasync-user', name);
@@ -28,16 +30,19 @@ export default function App() {
         <div className="header-left">
           {selectedList && (
             <button className="back-btn" onClick={() => setSelectedList(null)}>
-              ← Back
+              {t.back}
             </button>
           )}
         </div>
         <h1 className="app-title">CasaSync</h1>
         <div className="header-right">
+          <button className="lang-btn" onClick={toggleLanguage} title="Switch language">
+            {lang === 'en' ? 'PT' : 'EN'}
+          </button>
           <span className={`user-badge ${user === 'Filipa' ? 'user-filipa' : 'user-rafael'}`}>
             {user}
           </span>
-          <button className="logout-btn" onClick={handleLogout}>Switch</button>
+          <button className="logout-btn" onClick={handleLogout}>{t.switchUser}</button>
         </div>
       </header>
 
@@ -45,7 +50,7 @@ export default function App() {
         {selectedList ? (
           <TaskList list={selectedList} user={user} onBack={() => setSelectedList(null)} />
         ) : (
-          <ListSelector user={user} onSelectList={setSelectedList} />
+          <Dashboard user={user} onSelectList={setSelectedList} />
         )}
       </main>
     </div>

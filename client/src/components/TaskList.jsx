@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
+import { useLanguage } from '../i18n';
 import TaskItem from './TaskItem';
 
 export default function TaskList({ list, user }) {
+  const { t } = useLanguage();
   const [items, setItems] = useState([]);
   const [newText, setNewText] = useState('');
+  const [isDaily, setIsDaily] = useState(false);
 
   const fetchItems = async () => {
     const { data } = await supabase
@@ -19,7 +22,6 @@ export default function TaskList({ list, user }) {
   useEffect(() => {
     fetchItems();
 
-    // Real-time subscription for this list's items
     const channel = supabase
       .channel(`items-list-${list.id}`)
       .on('postgres_changes', {
@@ -44,8 +46,10 @@ export default function TaskList({ list, user }) {
       list_id: list.id,
       text: newText.trim(),
       added_by: user,
+      is_daily: isDaily,
     });
     setNewText('');
+    setIsDaily(false);
   };
 
   const handleToggle = async (itemId, currentlyCompleted) => {
@@ -82,25 +86,34 @@ export default function TaskList({ list, user }) {
           {list.emoji} {list.name}
         </h2>
         <span className="task-count">
-          {pendingCount} pending{completedCount > 0 && ` · ${completedCount} done`}
+          {t.pending(pendingCount)}{completedCount > 0 && ` · ${t.done(completedCount)}`}
         </span>
       </div>
 
       <form className="add-item-form" onSubmit={handleAdd}>
-        <input
-          type="text"
-          placeholder="Add new item..."
-          value={newText}
-          onChange={(e) => setNewText(e.target.value)}
-          className="add-item-input"
-          autoFocus
-        />
-        <button type="submit" className="add-item-btn">Add</button>
+        <div className="add-item-row">
+          <input
+            type="text"
+            placeholder={t.addNewItem}
+            value={newText}
+            onChange={(e) => setNewText(e.target.value)}
+            className="add-item-input"
+            autoFocus
+          />
+          <button type="submit" className="add-item-btn">{t.add}</button>
+        </div>
+        <button
+          type="button"
+          className={`daily-chip ${isDaily ? 'daily-chip-active' : ''}`}
+          onClick={() => setIsDaily(!isDaily)}
+        >
+          🔄 {t.daily}
+        </button>
       </form>
 
       <div className="items-list">
         {items.length === 0 ? (
-          <p className="empty-state">No items yet. Add something!</p>
+          <p className="empty-state">{t.noItems}</p>
         ) : (
           items.map((item) => (
             <TaskItem
@@ -116,7 +129,7 @@ export default function TaskList({ list, user }) {
 
       {completedCount > 0 && (
         <button className="clear-completed-btn" onClick={handleClearCompleted}>
-          Clear {completedCount} completed item{completedCount > 1 ? 's' : ''}
+          {t.clearCompleted(completedCount)}
         </button>
       )}
     </div>

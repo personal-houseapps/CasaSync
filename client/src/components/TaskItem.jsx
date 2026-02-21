@@ -1,19 +1,24 @@
+import { useLanguage } from '../i18n';
+
 export default function TaskItem({ item, user, onToggle, onDelete }) {
+  const { t, lang } = useLanguage();
   const isFilipa = item.added_by === 'Filipa';
   const userClass = isFilipa ? 'user-filipa' : 'user-rafael';
 
   const formatTime = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const time = `${hours}:${minutes}`;
+    const today = new Date();
 
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return date.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
+    if (date.toDateString() === today.toDateString()) {
+      return time;
+    }
+    const locale = lang === 'pt' ? 'pt-PT' : 'en-GB';
+    const dateStr2 = date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+    return `${dateStr2} ${time}`;
   };
 
   return (
@@ -26,16 +31,22 @@ export default function TaskItem({ item, user, onToggle, onDelete }) {
       </button>
 
       <div className="task-content">
-        <span className={`task-text ${item.completed ? 'task-text-done' : ''}`}>
-          {item.text}
-        </span>
+        <div className="task-text-row">
+          <span className={`task-text ${item.completed ? 'task-text-done' : ''}`}>
+            {item.text}
+          </span>
+          {item.is_daily && <span className="daily-badge">{t.daily}</span>}
+        </div>
         <div className="task-meta">
           <span className={`task-author ${userClass}`}>
             {item.added_by}
           </span>
+          <span className="task-time-info">
+            {t.addedAt(formatTime(item.created_at))}
+          </span>
           {item.completed && item.completed_by && (
             <span className="task-completed-info">
-              — done by {item.completed_by} {formatTime(item.completed_at)}
+              — {t.doneBy(item.completed_by, formatTime(item.completed_at))}
             </span>
           )}
         </div>
@@ -44,7 +55,7 @@ export default function TaskItem({ item, user, onToggle, onDelete }) {
       <button
         className="task-delete"
         onClick={() => onDelete(item.id)}
-        title="Delete item"
+        title="Delete"
       >
         ×
       </button>
