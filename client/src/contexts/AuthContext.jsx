@@ -111,29 +111,15 @@ export function AuthProvider({ children }) {
   };
 
   const createHousehold = async (householdName, displayName, color) => {
-    const userId = session.user.id;
+    const { error } = await supabase.rpc('create_household', {
+      p_name: householdName,
+      p_display_name: displayName,
+      p_color: color,
+    });
 
-    const { data: h, error: hErr } = await supabase
-      .from('households')
-      .insert({ name: householdName, created_by: userId })
-      .select()
-      .single();
+    if (error) return { error };
 
-    if (hErr) return { error: hErr };
-
-    const { error: mErr } = await supabase
-      .from('members')
-      .insert({
-        user_id: userId,
-        household_id: h.id,
-        display_name: displayName,
-        color,
-        is_owner: true,
-      });
-
-    if (mErr) return { error: mErr };
-
-    await fetchMemberData(userId);
+    await fetchMemberData(session.user.id);
     return { error: null };
   };
 
