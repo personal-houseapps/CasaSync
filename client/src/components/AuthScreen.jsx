@@ -41,11 +41,11 @@ export default function AuthScreen() {
 
   if (signUpSuccess) {
     return (
-      <div className="name-select">
-        <div className="name-select-content">
-          <h1 className="name-select-title">CasaSync</h1>
-          <p className="name-select-subtitle">{t.checkEmail}</p>
-          <button className="btn-create" onClick={() => { setSignUpSuccess(false); setIsLogin(true); }}>
+      <div className="auth-screen">
+        <div className="auth-card">
+          <h1>CasaSync</h1>
+          <p className="auth-success">{t.checkEmail}</p>
+          <button className="auth-submit" onClick={() => { setSignUpSuccess(false); setIsLogin(true); }} style={{ marginTop: 16 }}>
             {t.logIn}
           </button>
         </div>
@@ -54,9 +54,9 @@ export default function AuthScreen() {
   }
 
   return (
-    <div className="name-select">
-      <div className="name-select-content">
-        <h1 className="name-select-title">CasaSync</h1>
+    <div className="auth-screen">
+      <div className="auth-card">
+        <h1>CasaSync</h1>
 
         <div className="auth-tabs">
           <button
@@ -106,7 +106,7 @@ export default function AuthScreen() {
 
           {error && <p className="auth-error">{error}</p>}
 
-          <button type="submit" className="btn-create auth-submit" disabled={loading}>
+          <button type="submit" className="auth-submit" disabled={loading}>
             {loading
               ? (isLogin ? t.loggingIn : t.signingUp)
               : (isLogin ? t.logIn : t.signUp)
@@ -114,9 +114,11 @@ export default function AuthScreen() {
           </button>
         </form>
 
-        <button className="lang-btn-login" onClick={toggleLanguage}>
-          {lang === 'en' ? '🌐 Português' : '🌐 English'}
-        </button>
+        <div className="auth-lang-row">
+          <button className="lang-btn-login" onClick={toggleLanguage}>
+            {lang === 'en' ? '🌐 Portugues' : '🌐 English'}
+          </button>
+        </div>
       </div>
     </div>
   );

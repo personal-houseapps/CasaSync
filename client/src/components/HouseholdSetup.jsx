@@ -36,27 +36,25 @@ export default function HouseholdSetup() {
 
   if (!mode) {
     return (
-      <div className="name-select">
-        <div className="name-select-content">
-          <h1 className="name-select-title">CasaSync</h1>
-          <p className="name-select-subtitle">{t.householdSetupSubtitle}</p>
+      <div className="household-screen">
+        <div className="household-card">
+          <h1>CasaSync</h1>
+          <p className="household-subtitle">{t.householdSetupSubtitle}</p>
 
-          <div className="name-select-buttons">
-            <button className="name-btn" onClick={() => setMode('create')}>
-              <span className="name-btn-emoji">🏠</span>
-              <span className="name-btn-name">{t.createHousehold}</span>
+          <div className="household-choice">
+            <button className="household-choice-btn" onClick={() => setMode('create')}>
+              🏠 {t.createHousehold}
             </button>
-            <button className="name-btn" onClick={() => setMode('join')}>
-              <span className="name-btn-emoji">🔑</span>
-              <span className="name-btn-name">{t.joinHousehold}</span>
+            <button className="household-choice-btn" onClick={() => setMode('join')}>
+              🔑 {t.joinHousehold}
             </button>
           </div>
 
           <div className="household-footer">
             <button className="lang-btn-login" onClick={toggleLanguage}>
-              {lang === 'en' ? '🌐 Português' : '🌐 English'}
+              {lang === 'en' ? '🌐 Portugues' : '🌐 English'}
             </button>
-            <button className="btn-cancel" onClick={signOut}>{t.logOut}</button>
+            <button className="btn-cancel" onClick={signOut} style={{ marginLeft: 8 }}>{t.logOut}</button>
           </div>
         </div>
       </div>
@@ -64,12 +62,12 @@ export default function HouseholdSetup() {
   }
 
   return (
-    <div className="name-select">
-      <div className="name-select-content">
-        <h1 className="name-select-title">CasaSync</h1>
+    <div className="household-screen">
+      <div className="household-card">
+        <h1>CasaSync</h1>
 
-        <form className="auth-form" onSubmit={mode === 'create' ? handleCreate : handleJoin}>
-          <h3 className="auth-form-title">
+        <form className="household-form" onSubmit={mode === 'create' ? handleCreate : handleJoin}>
+          <h3 style={{ textAlign: 'center', marginBottom: 8 }}>
             {mode === 'create' ? t.createHousehold : t.joinHousehold}
           </h3>
 
@@ -106,7 +104,7 @@ export default function HouseholdSetup() {
             required
           />
 
-          <p className="color-picker-label">{t.pickColor}</p>
+          <label>{t.pickColor}</label>
           <ColorPicker selected={color} onSelect={setColor} />
 
           {error && <p className="auth-error">{error}</p>}
