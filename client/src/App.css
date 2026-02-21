@@ -264,6 +264,20 @@ body {
   border-left: 3px solid var(--border);
 }
 
+.activity-item-clickable {
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.activity-item-clickable:hover {
+  background: var(--bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.activity-item-clickable:active {
+  transform: scale(0.98);
+}
+
 .activity-filipa {
   border-left-color: var(--pink);
 }

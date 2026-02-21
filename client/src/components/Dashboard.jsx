@@ -34,7 +34,7 @@ export default function Dashboard({ user, onSelectList }) {
 
   return (
     <div className="dashboard">
-      <ActivityFeed lists={lists} />
+      <ActivityFeed lists={lists} onSelectList={onSelectList} />
 
       <DailyTasks user={user} lists={lists} />
 

@@ -50,6 +50,9 @@ const en = {
   // QuickAdd
   selectList: 'Select list...',
   general: 'General',
+
+  // Common
+  delete: 'Delete',
 };
 
 const pt = {
@@ -102,6 +105,9 @@ const pt = {
   // QuickAdd
   selectList: 'Escolher lista...',
   general: 'Geral',
+
+  // Common
+  delete: 'Apagar',
 };
 
 const languages = { en, pt };

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useLanguage } from '../i18n';
 
-export default function ActivityFeed({ lists }) {
+export default function ActivityFeed({ lists, onSelectList }) {
   const { t } = useLanguage();
   const [activities, setActivities] = useState([]);
 
@@ -38,6 +38,7 @@ export default function ActivityFeed({ lists }) {
           addedBy: item.added_by,
           listId: item.list_id,
           listName,
+          list,
           count: 1,
           items: [item],
           time: item.created_at,
@@ -76,7 +77,11 @@ export default function ActivityFeed({ lists }) {
       <h2 className="section-title">{t.recentActivity}</h2>
       <div className="activity-list">
         {activities.map((a, i) => (
-          <div key={i} className={`activity-item ${a.addedBy === 'Filipa' ? 'activity-filipa' : 'activity-rafael'}`}>
+          <div
+            key={i}
+            className={`activity-item activity-item-clickable ${a.addedBy === 'Filipa' ? 'activity-filipa' : 'activity-rafael'}`}
+            onClick={() => a.list && onSelectList(a.list)}
+          >
             <div className="activity-text">
               {a.count > 1
                 ? t.addedTasks(a.addedBy, a.count, a.listName)

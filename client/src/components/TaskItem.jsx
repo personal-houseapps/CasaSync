@@ -52,13 +52,15 @@ export default function TaskItem({ item, user, onToggle, onDelete }) {
         </div>
       </div>
 
-      <button
-        className="task-delete"
-        onClick={() => onDelete(item.id)}
-        title="Delete"
-      >
-        ×
-      </button>
+      {user === item.added_by && (
+        <button
+          className="task-delete"
+          onClick={() => onDelete(item.id)}
+          title={t.delete}
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }

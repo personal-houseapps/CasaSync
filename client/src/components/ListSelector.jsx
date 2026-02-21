@@ -21,6 +21,9 @@ export default function ListSelector({ lists, onSelectList }) {
     setShowNewForm(false);
   };
 
+  const isGeneralList = (list) =>
+    list.name === 'General' || list.name === 'Geral';
+
   const handleDelete = async (e, listId) => {
     e.stopPropagation();
     if (confirm(t.deleteListConfirm)) {
@@ -45,22 +48,24 @@ export default function ListSelector({ lists, onSelectList }) {
             className="list-card"
             onClick={() => onSelectList(list)}
           >
-            <div className="list-card-actions">
-              <button
-                className="list-card-edit"
-                onClick={(e) => handleEdit(e, list)}
-                title={t.editList}
-              >
-                ✏️
-              </button>
-              <button
-                className="list-card-delete"
-                onClick={(e) => handleDelete(e, list.id)}
-                title="Delete"
-              >
-                ×
-              </button>
-            </div>
+            {!isGeneralList(list) && (
+              <div className="list-card-actions">
+                <button
+                  className="list-card-edit"
+                  onClick={(e) => handleEdit(e, list)}
+                  title={t.editList}
+                >
+                  ✏️
+                </button>
+                <button
+                  className="list-card-delete"
+                  onClick={(e) => handleDelete(e, list.id)}
+                  title={t.delete}
+                >
+                  ×
+                </button>
+              </div>
+            )}
             <span className="list-card-emoji">{list.emoji}</span>
             <span className="list-card-name">{list.name}</span>
           </div>

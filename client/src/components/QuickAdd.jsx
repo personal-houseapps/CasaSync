@@ -23,12 +23,14 @@ export default function QuickAdd({ user, lists, onClose }) {
       }
     }
 
-    await supabase.from('items').insert({
+    const newItem = {
       list_id: listId,
       text: text.trim(),
       added_by: user,
-      is_daily: isDaily,
-    });
+    };
+    if (isDaily) newItem.is_daily = true;
+
+    await supabase.from('items').insert(newItem);
 
     setText('');
     setSelectedListId('');

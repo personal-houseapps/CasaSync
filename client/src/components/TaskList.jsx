@@ -42,12 +42,14 @@ export default function TaskList({ list, user }) {
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!newText.trim()) return;
-    await supabase.from('items').insert({
+    const newItem = {
       list_id: list.id,
       text: newText.trim(),
       added_by: user,
-      is_daily: isDaily,
-    });
+    };
+    if (isDaily) newItem.is_daily = true;
+
+    await supabase.from('items').insert(newItem);
     setNewText('');
     setIsDaily(false);
   };
