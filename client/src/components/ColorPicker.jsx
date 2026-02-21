@@ -7,7 +7,7 @@ export default function ColorPicker({ selected, onSelect }) {
         <button
           key={c.hex}
           type="button"
-          className={`color-option ${selected === c.hex ? 'color-option-selected' : ''}`}
+          className={`color-circle ${selected === c.hex ? 'color-circle-selected' : ''}`}
           style={{ background: c.hex }}
           onClick={() => onSelect(c.hex)}
           title={c.name}
